@@ -10,6 +10,7 @@ public class CineMatchApplication {
         SpringApplication.run(CineMatchApplication.class, args);
         System.out.println("\n🎬 CineMatch backend is now running...");
         System.out.println("test1\n");
+        System.out.println("test2\n");
 
 
 
