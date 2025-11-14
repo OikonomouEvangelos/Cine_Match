@@ -12,7 +12,7 @@ public class CineMatchApplication {
         System.out.println("test1\n");
 
         System.out.println("test2\n");
-        System.out.println("test3\n");
+        System.out.println("test3!\n");
 
 
 
