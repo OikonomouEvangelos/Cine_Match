@@ -26,3 +26,42 @@ export const movieService = {
     return response.json();
   }
 };
+export const authService = {
+  async login(email, password) {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Αποτυχία σύνδεσης');
+    }
+
+    return response.json();
+  },
+
+  async register(userData) {
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Αποτυχία εγγραφής');
+    }
+
+    return response.json();
+  },
+
+  async logout() {
+    // Εδώ μπορείς να προσθέσεις κώδικα για logout αν χρειάζεται
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  }
+};
