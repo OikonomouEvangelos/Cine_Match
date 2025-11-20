@@ -2,11 +2,11 @@ package com.cinematch.user.dto;
 
 public class AuthRequest {
 
-    // Χρησιμοποιείται στο register
+    // για register
     private String firstName;
     private String lastName;
 
-    // Χρησιμοποιείται και στο register και στο login
+    // για register + login
     private String email;
     private String password;
 

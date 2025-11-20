@@ -18,7 +18,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    // ΕΓΓΡΑΦΗ ΧΡΗΣΤΗ
+    // ΕΓΓΡΑΦΗ
     public AuthResponse register(AuthRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {

@@ -1,17 +1,25 @@
 package com.cinematch.user.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import jakarta.persistence.*;
 
-@Document(collection = "users")
+@Entity
+@Table(name = "users")   // έτσι θα λέγεται ο πίνακας στην Postgres
 public class User {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;   // primary key
 
+    @Column(nullable = false)
     private String firstName;
+
+    @Column(nullable = false)
     private String lastName;
+
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
     private String passwordHash;
 
     public User() {
@@ -24,11 +32,11 @@ public class User {
         this.passwordHash = passwordHash;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
