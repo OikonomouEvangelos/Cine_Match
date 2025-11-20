@@ -7,6 +7,8 @@ import com.cinematch.user.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class UserService {
@@ -22,7 +24,7 @@ public class UserService {
     public AuthResponse register(AuthRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            return new AuthResponse("Email already in use");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use");
         }
 
         String hash = passwordEncoder.encode(request.getPassword());
@@ -46,7 +48,7 @@ public class UserService {
                 .orElse(null);
 
         if (user == null) {
-            return new AuthResponse("Invalid email or password");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
         }
 
         boolean matches = passwordEncoder.matches(
@@ -55,7 +57,7 @@ public class UserService {
         );
 
         if (!matches) {
-            return new AuthResponse("Invalid email or password");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
         }
 
         return new AuthResponse("Login successful");

@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { authService } from '../services/api';
 
 const Auth = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const initialMode = query.get('mode') === 'register' ? false : true; // false -> show register
+
+  const [isLogin, setIsLogin] = useState(initialMode);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -11,6 +16,12 @@ const Auth = () => {
   });
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // update mode if query changes
+    const q = new URLSearchParams(location.search);
+    setIsLogin(q.get('mode') === 'register' ? false : true);
+  }, [location.search]);
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -18,19 +29,38 @@ const Auth = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Προσωρινή λογική - θα την συνδέσουμε με το backend αργότερα
     console.log('Form data:', formData);
 
-    if (isLogin) {
-      // Σύνδεση χρήστη
-      alert(`Συνδεθήκατε με email: ${formData.email}`);
-      navigate('/'); // Μεταφορά στην αρχική σελίδα μετά τη σύνδεση
-    } else {
-      // Εγγραφή χρήστη
-      alert(`Εγγραφήκατε με email: ${formData.email}`);
-      setIsLogin(true); // Αλλαγή σε λειτουργία σύνδεσης μετά την εγγραφή
+    try {
+      if (isLogin) {
+        const res = await authService.login(formData.email, formData.password);
+        alert(res.message || 'Σύνδεση επιτυχής');
+        // Αποθήκευση ελάχιστων στοιχείων χρήστη τοπικά αν χρειάζεται
+        localStorage.setItem('user', JSON.stringify({ email: formData.email }));
+        // notify other components (Header) about auth change
+        window.dispatchEvent(new Event('authChanged'));
+        navigate('/');
+      } else {
+        const res = await authService.register(formData);
+        alert(res.message || 'Εγγραφή επιτυχής');
+        // Auto-login after successful registration to improve UX
+        try {
+          const loginRes = await authService.login(formData.email, formData.password);
+          // store minimal user info locally
+          localStorage.setItem('user', JSON.stringify({ email: formData.email }));
+          // notify other components (Header) about auth change
+          window.dispatchEvent(new Event('authChanged'));
+          alert(loginRes.message || 'Σύνδεση επιτυχής');
+          navigate('/');
+        } catch (loginErr) {
+          // If auto-login fails, switch to login view so user can try manually
+          setIsLogin(true);
+        }
+      }
+    } catch (err) {
+      alert(err.message || 'Σφάλμα');
     }
   };
 
